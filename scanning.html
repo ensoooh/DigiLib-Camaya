@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanning Page</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+        }
+        video {
+            width: 300px;
+            height: 300px;
+            margin-bottom: 20px;
+            border: 2px solid maroon;
+            border-radius: 5px;
+        }
+        .book-details {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .confirm-buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: maroon;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #8b0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="color: maroon;">Scanning Page</h2>
+        <video id="scanner" playsinline></video>
+        <div class="book-details" id="book-details"></div>
+        <div class="confirm-buttons">
+            <button class="btn" onclick="confirmBook()">Confirm</button>
+            <button class="btn" onclick="redirectToScanningPage()">Scan Again</button>
+        </div>
+    </div>
+    <script src="jsQR-master/dist/jsQR.js"></script>
+    <script>
+        // Access the user's camera and display the camera feed
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(function(stream) {
+            var video = document.getElementById('scanner');
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch(function(error) {
+            console.error("Error accessing the camera: ", error);
+            alert("Error accessing the camera. Please make sure you have granted camera access.");
+        });
+
+        // Function to redirect to the scanning page
+        function redirectToScanningPage() {
+            window.location.href = "scanning.html";
+        }
+
+        // Function to confirm the scanned book
+        function confirmBook() {
+            var bookCode = Math.random() < 0.5 ? "0-001" : "0-002"; // Randomly select a book code
+            var bookDetails = "";
+
+            // Retrieve book details based on code
+            switch (bookCode) {
+                case "0-001":
+                    bookDetails = "Romeo and Juliet";
+                    break;
+                case "0-002":
+                    bookDetails = "Harry Potter";
+                    break;
+                case "0-003":
+                    bookDetails = "Lord of the Rings";
+                    break;
+                case "0-004":
+                    bookDetails = "Game of Thrones";
+                    break;
+                case "0-005":
+                    bookDetails = "He's Into Her";
+                    break;
+                case "0-006":
+                    bookDetails = "To Kill a Mockingbird";
+                    break;
+                case "0-007":
+                    bookDetails = "General Physics for Grade 12";
+                    break;
+                case "0-008":
+                    bookDetails = "General Biology";
+                    break;
+            }
+
+            // Hide the video element
+            document.getElementById('scanner').style.display = 'none';
+
+            // Display book details
+            document.getElementById("book-details").innerHTML = `
+                <p>Selected Book: <strong>${bookDetails}</strong></p>
+                <p>Book Code: <strong>${bookCode}</strong></p>
+                <p>Is this the correct book?</p>
+            `;
+            document.getElementById("book-details").classList.add("book-details");
+
+            // Show confirm buttons
+            document.querySelector(".confirm-buttons").innerHTML = `
+                <button class="btn" onclick="confirmBorrow(1)">1 Day</button>
+                <button class="btn" onclick="confirmBorrow(2)">2 Days</button>
+                <button class="btn" onclick="confirmBorrow(3)">3 Days</button>
+                <button class="btn" onclick="confirmBorrow(7)">7 Days</button>
+            `;
+        }
+
+        // Function to confirm borrowing with selected duration
+        function confirmBorrow(days) {
+            var bookCode = Math.random() < 0.5 ? "0-001" : "0-002"; // Randomly select a book code
+            var bookDetails = "";
+
+            // Retrieve book details based on code
+            switch (bookCode) {
+                case "0-001":
+                    bookDetails = "Romeo and Juliet";
+                    break;
+                case "0-002":
+                    bookDetails = "Harry Potter";
+                    break;
+                case "0-003":
+                    bookDetails = "Lord of the Rings";
+                    break;
+                case "0-004":
+                    bookDetails = "Game of Thrones";
+                    break;
+                case "0-005":
+                    bookDetails = "He's Into Her";
+                    break;
+                case "0-006":
+                    bookDetails = "To Kill a Mockingbird";
+                    break;
+                case "0-007":
+                    bookDetails = "General Physics for Grade 12";
+                    break;
+                case "0-008":
+                    bookDetails = "General Biology";
+                    break;
+            }
+
+            // Get today's date
+            var currentDate = new Date();
+
+            // Calculate due date
+            var dueDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000);
+
+            // Add the record to the dashboard
+            var currentUser = localStorage.getItem("currentUser");
+            var borrowedBooks = JSON.parse(localStorage.getItem(currentUser + "-books")) || [];
+            borrowedBooks.push({ title: bookDetails, dueDate: dueDate.toDateString() });
+            localStorage.setItem(currentUser + "-books", JSON.stringify(borrowedBooks));
+
+            // Redirect to scanned successfully page
+            window.location.href = "scanned-successfully.html";
+        }
+    </script>
+</body>
+</html>
